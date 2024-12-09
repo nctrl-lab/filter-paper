@@ -1,5 +1,6 @@
-# Ignore bib files
+# Ignore bib, cache files
 *.bib
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
