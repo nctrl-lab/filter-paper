@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "filter-paper"
+authors = [
+    {name = "DKim", email = "lapis42@gmail.com"},
+]
+description = "Filter-Paper: Paper Filtering Tool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT License"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "numpy",
+    "sklearn",
+    "sentence-transformers",
+    "feedparser",
+    "pybtex",
+    "click",
+    "keyring",
+]
+dynamic = ["version"]
+[tool.setuptools_scm]
+
+[project.urls]
+Homepage = "https://github.com/nctrl-lab/filter-paper"
+
+[project.scripts]
+filter-paper = "filter_paper.main:filterpaper"
