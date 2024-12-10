@@ -38,7 +38,11 @@ class FilterPaper:
         # Load cached entries if they exist
         # Create a safe filename by replacing invalid characters with underscores
         safe_name = re.sub(r'[:/\?=&]', '_', rss)
-        cache_file = f"cache_{safe_name}.json"
+
+        # Ensure cache directory exists
+        cache_dir = os.path.expanduser('~/.cache/filter-paper')
+        os.makedirs(cache_dir, exist_ok=True)
+        cache_file = os.path.join(cache_dir, f"{safe_name}.json")
         cached_entries = set()
         if os.path.exists(cache_file):
             with open(cache_file, 'r') as f:
@@ -54,8 +58,8 @@ class FilterPaper:
         
         # Update cache with new entries
         with open(cache_file, 'w') as f:
-            json.dump(list(cached_entries | {entry.title for entry in feed.entries}), f)
-            
+            json.dump(list({entry.title for entry in feed.entries}), f)
+
         # Process only new entries
         feed_entries = [entry.title + ' ' + entry.get('summary', '') 
                        for entry in new_entries]
@@ -98,10 +102,6 @@ class FilterPaper:
         if threshold is not None:
             print(f"Showing papers with similarity >= {100*threshold:.0f}%\n")
 
-        for entry in entries:
-            print(entry)
-            print()
-        
         return entries
 
 
@@ -120,11 +120,12 @@ def send_slack_message(message):
 
 
 @click.command()
-def filterpaper():
+@click.option('--slack', is_flag=True, default=False, help='Send message to slack')
+def filterpaper(slack=True):
     filter_paper = FilterPaper()
-    for journal, rss in PAPERS.items():
+    for journal, (rss, threshold) in PAPERS.items():
         print(f"Filtering {journal}...")
-        entries = filter_paper(rss)
+        entries = filter_paper(rss, threshold)
         
         if entries:
             message = f"{journal}\n"
@@ -132,7 +133,8 @@ def filterpaper():
 
             print(message)
             print()
-            send_slack_message(message)
+            if slack:
+                send_slack_message(message)
 
 
 if __name__ == "__main__":

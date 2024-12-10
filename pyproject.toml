@@ -16,7 +16,7 @@ classifiers = [
 ]
 dependencies = [
     "numpy",
-    "sklearn",
+    "scikit-learn", 
     "sentence-transformers",
     "feedparser",
     "pybtex",
@@ -31,3 +31,6 @@ Homepage = "https://github.com/nctrl-lab/filter-paper"
 
 [project.scripts]
 filter-paper = "filter_paper.main:filterpaper"
+
+[tool.setuptools]
+packages = ["filter_paper"]

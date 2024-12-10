@@ -22,11 +22,12 @@ pip install .
 
 2. Run
 ```bash
-filterpaper
+filter-paper --slack
 ```
 
 - If you don't have a Slack webhook URL, you will be prompted to enter one.
 - The webhook URL will be cached in your system keyring, so you don't need to enter it again.
+- If you don't want to send a message to Slack, you can run `filter-paper` without the `--slack` flag.
 
 3. Add more journals
 You can add more journals to the `PAPERS` dictionary in `filter_paper/constants.py`.
