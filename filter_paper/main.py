@@ -13,18 +13,26 @@ from sklearn.metrics.pairwise import cosine_similarity
 from .constants import PAPERS
 
 class FilterPaper:
-    def __init__(self, bibtex_file='assets/My Library.bib'):
+    def __init__(self, bibtex_file=None):
         self.model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
         # Parse bibtex file once at initialization
+        if bibtex_file is None:
+            bibtex_file = os.path.expanduser('~/.cache/filter-paper/My Library.bib')
+        else:
+            bibtex_file = os.path.expanduser(bibtex_file)
+
         parser = bibtex.Parser()
         bib_data = parser.parse_file(bibtex_file)
 
         # Extract and clean titles in one pass
         queries = []
         for entry in bib_data.entries.values():
-            title = entry.fields['title']
-            title = title.replace('{','').replace('}','')
+            if entry.fields.get('title'):
+                title = entry.fields['title']
+                title = title.replace('{','').replace('}','')
+            else:
+                continue
 
             abstract = entry.fields.get('abstract', '')
             queries.append(title + ' ' + abstract if abstract else title)
@@ -121,8 +129,9 @@ def send_slack_message(message):
 
 @click.command()
 @click.option('--slack', is_flag=True, default=False, help='Send message to slack')
-def filterpaper(slack=True):
-    filter_paper = FilterPaper()
+@click.option('--bibtex', type=click.Path(exists=True), default=None, help='Path to the bibtex file')
+def filterpaper(slack=True, bibtex=None):
+    filter_paper = FilterPaper(bibtex)
     for journal, (rss, threshold) in PAPERS.items():
         print(f"Filtering {journal}...")
         entries = filter_paper(rss, threshold)

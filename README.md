@@ -31,3 +31,6 @@ filter-paper --slack
 
 3. Add more journals
 You can add more journals to the `PAPERS` dictionary in `filter_paper/constants.py`.
+
+- Put your bibtex file in `~/.cache/filter-paper/`.
+- I use *Task Scheduler* to run `filter-paper` everyday.
